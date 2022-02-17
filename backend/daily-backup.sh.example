@@ -1,0 +1,27 @@
+#!/bin/bash
+export PATH="/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin"
+export LANG=C
+
+
+# バックアップ先
+BACKUP="/path-to-backup"
+# データベースの一時出力先
+SQL="/path-to-temp/database-name.sql"
+
+
+RSYNC="rsync $1 -av --delete"
+
+LOG="/var/log/project-name-backup.log"
+if [ -f $LOG ]; then
+        gzip -f $LOG
+fi
+
+# storageのバックアップ
+$RSYNC /path-to-project/storage/app/public $BACKUP >> $LOG 2>&1
+# データベースのバックアップ
+mysqldump -u root database-name > $SQL
+$RSYNC $SQL $BACKUP >> $LOG 2>&1
+rm -f $SQL
+
+
+exit 0
