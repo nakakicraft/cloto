@@ -13,4 +13,4 @@
 ```
 http://localhost:8080 にアクセス
 
-[makeコマンドのセットアップはこちら](./documentation/make-setup.md)
+makeコマンドやDockerのセットアップはGithubのWikiを参照
