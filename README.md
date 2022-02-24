@@ -11,6 +11,8 @@
 ```
     make up
 ```
+
 http://localhost:8080 にアクセス
 
-makeコマンドやDockerのセットアップはGithubのWikiを参照
+makeコマンドやDockerのセットアップはGithubのWikiを参照  
+コマンドの種類はMakefileを確認
