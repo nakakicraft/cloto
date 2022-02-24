@@ -1,0 +1,28 @@
+# PhpStorm
+.idea
+
+# Docker Compose
+.env
+
+redis
+
+/.vscode/sftp.json
+/backend/public/css
+/backend/public/fonts
+/backend/public/js
+/backend/public/storage
+/backend/public/hot
+/backend/public/mix-manifest.json
+/backend/storage/*.key
+/backend/vendor
+.env
+.env.backup
+.phpunit.result.cache
+.DS_Store
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+daily-backup.sh
+node_modules
+laravel-echo-server.lock

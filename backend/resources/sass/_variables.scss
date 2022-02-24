@@ -1,0 +1,42 @@
+// Breakpoints
+$breakpoints: (
+  'xs': 'screen and (max-width: 599px)',
+  'sm': 'screen and (min-width: 600px) and (max-width: 959px)',
+  'md': 'screen and (min-width: 960px) and (max-width: 1263px)',
+  'lg': 'screen and (min-width: 960px) and (max-width: 1903px)',
+  'xl': 'screen and (min-width: 1904px)',
+) !default;
+
+// Typography
+$font-family: 'Hiragino Kaku Gothic Pro', 'ヒラギノ角ゴ Pro', 'Yu Gothic Medium',
+  '游ゴシック Medium', YuGothic, '游ゴシック体', 'メイリオ', sans-serif;
+$font-size-base: 0.9rem;
+$line-height-base: 1.6;
+
+// Colors
+$primary: #f6bf00;
+$black: #212121;
+$white: #ffffff;
+$light-gray: #f4f4f4;
+$gray: #9e9e9e;
+$cream: #fffbeb;
+$light-yellow: #ffe89a;
+$red: #ff0000;
+$vermilion: #f44336;
+$pink: #e57373;
+$dark-blue: #0578ff;
+$blue: #2196f3;
+$cyan: #6cb2eb;
+$light-blue: #bbdefb;
+
+// Icons
+$twitter-color: #00acee;
+$github-color: #000000;
+$qiita-color: #4cb10d;
+
+// Mixin
+@mixin mq($breakpoint: md) {
+  @media #{map-get($breakpoints, $breakpoint)} {
+    @content;
+  }
+}
