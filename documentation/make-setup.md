@@ -7,14 +7,14 @@ http://gnuwin32.sourceforge.net/packages/make.htm
 ![ダウンロードサイト](./img/make-setup/download.png) 
 
 ## 2. ダウンロードした実行ファイルを実行
-![ダウンロードサイト](./img/make-setup/setup1.png)
-![ダウンロードサイト](./img/make-setup/setup2.png) 
-![ダウンロードサイト](./img/make-setup/setup3.png) 
-![ダウンロードサイト](./img/make-setup/setup4.png) 
-![ダウンロードサイト](./img/make-setup/setup5.png) 
-![ダウンロードサイト](./img/make-setup/setup6.png) 
-![ダウンロードサイト](./img/make-setup/setup7.png) 
-![ダウンロードサイト](./img/make-setup/setup8.png) 
+![ダウンロードサイト](./img/make-setup/setup1.png)   
+![ダウンロードサイト](./img/make-setup/setup2.png)   
+![ダウンロードサイト](./img/make-setup/setup3.png)   
+![ダウンロードサイト](./img/make-setup/setup4.png)   
+![ダウンロードサイト](./img/make-setup/setup5.png)   
+![ダウンロードサイト](./img/make-setup/setup6.png)   
+![ダウンロードサイト](./img/make-setup/setup7.png)   
+![ダウンロードサイト](./img/make-setup/setup8.png)   
 
 ## 3. Makeのパスを設定
 
