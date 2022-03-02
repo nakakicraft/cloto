@@ -1,5 +1,6 @@
 up:
 	docker compose up -d
+	docker compose exec app php artisan queue:work
 build:
 	docker compose build --no-cache --force-rm
 laravel-install:
@@ -24,11 +25,14 @@ install-recommend-packages:
 	docker compose exec app php artisan vendor:publish --provider="Barryvdh\Debugbar\ServiceProvider"
 init:
 	docker compose up -d --build
-	docker compose exec app composer install
 	docker compose exec app cp .env.example .env
+	docker compose exec app cp database/seeders/AdminsTableSeeder.php.example database/seeders/AdminsTableSeeder.php
+	docker compose exec app composer install
+	docker compose exec app composer dump-autoload
 	docker compose exec app php artisan key:generate
 	docker compose exec app php artisan storage:link
 	docker compose exec app php artisan migrate:refresh
+	docker compose exec app php artisan db:seed
 	@make npm-install
 	@make npm-dev
 remake:
