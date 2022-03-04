@@ -12,4 +12,6 @@ COPY ./php.ini /usr/local/etc/php/php.ini
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 RUN apt-get install -y nodejs
 RUN npm install npm@6.14.12 -g
+RUN git clone https://github.com/phpredis/phpredis.git /usr/src/php/ext/redis && \
+  docker-php-ext-install redis
 WORKDIR /work
