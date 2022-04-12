@@ -26,6 +26,14 @@
               </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
+          
+          <v-list-item class="mb-4" :to="{ name: 'frienders' }">
+            <v-list-item-content>
+              <v-list-item-title class="text-body-1 font-weight-bold">
+                ともだち
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
 
           <v-list-item class="mb-4" :to="{ name: 'karte' }">
             <v-list-item-content>

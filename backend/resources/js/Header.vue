@@ -92,6 +92,19 @@
               </v-list-item-title>
             </v-list-item>
 
+             <!-- 友達通知 -->
+            <v-list-item
+              :style="{
+                'background-color': notification.read_at ? '' : 'rgba(246, 191, 0, 0.2)',
+              }"
+              v-if="notification.type === 'UserFriended'"
+              @click="showItem('user', notification.username)"
+            >
+              <v-list-item-title>
+                {{ notification.message }}
+              </v-list-item-title>
+            </v-list-item>
+
             <!-- カルテへの通知 -->
             <v-list-item
               :style="{
@@ -120,6 +133,20 @@
                 notification.type === 'CommentToPostFavorited'
               "
               @click="showItem('post', notification.post_id)"
+            >
+              <v-list-item-title>
+                {{ notification.message }}
+              </v-list-item-title>
+            </v-list-item>
+             <!-- 質問への通知 -->
+            <v-list-item
+              :style="{
+                'background-color': notification.read_at ? '' : 'rgba(246, 191, 0, 0.2)',
+              }"
+              v-else-if="
+                notification.type === 'question' 
+              "
+              @click="showItem('question', notification.question_id)"
             >
               <v-list-item-title>
                 {{ notification.message }}
@@ -182,6 +209,16 @@ export default {
         // 通知の取得
         this.getNotifications();
 
+        Echo.channel("timeline").listen('TimelineUpdated',(event)=>{
+          console.log(event);
+          this.notifications.push({
+            type:'question',
+            question_id:event.id,
+            message:event.user.handlename + "が質問しました。"
+          })
+          this.unreadNotificationCount+=1
+        });
+
         // 通知イベントの受信開始
         Echo.channel('user.' + this.authUser.id).listen('NotificationPosted', (event) => {
           this.notifications = event.notifications;
@@ -233,7 +270,13 @@ export default {
     showItem: function (type, item) {
       if (type === 'user') {
         this.$store.dispatch('dialog/open', { type: type, username: item });
-      } else if (type === 'karte' || type === 'post') {
+      } else if (type === 'karte' || type === 'post' || type==='question' || type==='friend') {
+        this.$store.dispatch('dialog/open', { type: type, id: item });
+      }
+
+      if (type === 'user') {
+        this.$store.dispatch('dialog/open', { type: type, username: item });
+      } else if (type==='question' || type==='friend') {
         this.$store.dispatch('dialog/open', { type: type, id: item });
       }
 

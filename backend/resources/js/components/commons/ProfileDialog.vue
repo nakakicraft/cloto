@@ -70,8 +70,19 @@
                   {{ !user.following ? 'フォロー' : 'フォロー解除' }}
                 </v-btn>
               </v-row>
+              
+              <v-row class="mt-3" justify="center" v-if="user.id !== authUser.id">
+                <v-btn
+                  :color="!user.friending ? 'primary' : 'error'"
+                  :loading="loading2"
+                  @click="friend()"
+                >
+                  {{!user.friending ?(user.friended? '承認':'友達になる'):(user.friended? '友達解除':'申請中')}}
+                </v-btn>
+              </v-row>
 
-              <p class="mt-3 mb-0" v-if="user.followed">フォローされています</p>
+              <p class="mt-3 mb-0" v-if="user.followed" >フォローされています</p>
+
               <v-card
                 light
                 flat
@@ -137,6 +148,24 @@
 
           <v-spacer></v-spacer>
 
+          <v-col md="3" class="select pa-0" @click="showFriends()">
+            <v-card class="py-4" :color="color" :elevation="show === 'friend' ? 1 : 3">
+              <p class="text-center">フォロー</p>
+              <p class="text-center mb-0">{{ user.friends_count }}</p>
+            </v-card>
+          </v-col>
+
+          <v-spacer></v-spacer>
+
+          <v-col md="3" class="select pa-0" @click="showFrienders()">
+            <v-card class="py-4" :color="color" :elevation="show === 'friender' ? 1 : 3">
+              <p class="text-center">フォロワー</p>
+              <p class="text-center mb-0">{{ user.frienders_count }}</p>
+            </v-card>
+          </v-col>
+
+          <v-spacer></v-spacer>
+
           <v-col md="3" class="select pa-0" @click="showKartes()">
             <v-card class="py-4" :color="color" :elevation="show === 'karte' ? 1 : 3">
               <p class="text-center">カルテ</p>
@@ -176,6 +205,41 @@
         <v-list
           :color="color"
           v-if="(show === 'follow' || show === 'follower') && !followers.length"
+        >
+          <v-list-item>
+            <span class="mx-auto">誰よりも早くフォローしよう！</span>
+          </v-list-item>
+        </v-list>
+
+        <!-- 友達/友達申請一覧 -->
+        <v-list
+          :color="color"
+          v-if="(show === 'friend' || show === 'friender') && frienders.length"
+        >
+          <v-list-item
+            v-for="friender in frienders"
+            :key="friender.id"
+            @click="$store.dispatch('dialog/open', { type: 'user', username: friender.username })"
+          >
+            <v-list-item-avatar>
+              <v-img :src="$storage('icon') + follower.icon"></v-img>
+            </v-list-item-avatar>
+
+            <v-list-item-content>
+              <v-list-item-title>
+                {{ friender.handlename }}
+                <small>@{{ friender.username }}</small>
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ friender.introduction || '自己紹介が入力されていません。' }}
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+
+        <v-list
+          :color="color"
+          v-if="(show === 'friend' || show === 'friender') && !frienders.length"
         >
           <v-list-item>
             <span class="mx-auto">誰よりも早くフォローしよう！</span>
@@ -234,9 +298,11 @@ export default {
     return {
       dialog: false,
       loading: false, // ローディング制御
+      loading2: false, 
       user: null, // 表示するプロフィール
       show: null, // フォロー/フォロワーどちらを表示するか
       followers: [], // フォロー/フォロワー一覧
+      frienders: [], // フォロー/フォロワー一覧
       kartes: [], // カルテ一覧
       graphShow: true, //カルテ別の割合、日別のカルテ数を表すグラフの表示の有無
     };
@@ -337,6 +403,36 @@ export default {
       let response = await axios.get('/api/users/' + this.user.id + '/followers');
       this.followers = response.data;
       this.show = 'follower';
+    },
+
+/**
+     * 友達処理
+     */
+    friend: async function () {
+      this.loading2 = true;
+
+      let response = await axios.post('/api/users/' + this.user.id + '/friend');
+      this.user = response.data;
+
+      this.loading2 = false;
+    },
+
+    /**
+     * 友達一覧の表示
+     */
+    showFriends: async function () {
+      let response = await axios.get('/api/users/' + this.user.id + '/friends');
+      this.frienders = response.data;
+      this.show = 'friend';
+    },
+
+    /**
+     * フォロワー一覧の表示
+     */
+    showFrienders: async function () {
+      let response = await axios.get('/api/users/' + this.user.id + '/frienders');
+      this.frienders = response.data;
+      this.show = 'friender';
     },
 
     /**
