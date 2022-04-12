@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Events\SeatStatusUpdated;
 use App\Notifications\UserFollowed;
+use App\Notifications\UserFriended;
 use App\Events\NotificationPosted;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -152,7 +153,8 @@ class UserController extends Controller
         // フォロー関係の追加
         $user['following'] = $this->auth->isFollowing($user->id);
         $user['followed'] = $this->auth->isFollowed($user->id);
-
+        $user['friending'] = $this->auth->isFriending($user->id);
+        $user['friended'] = $this->auth->isFriended($user->id);
         return response()->json($user);
     }
 
@@ -245,6 +247,56 @@ class UserController extends Controller
         // フォロー時には通知を発行
         if (count($result['attached'])) {
             $user->notify(new UserFollowed($this->auth));
+            broadcast(new NotificationPosted($user));
+        }
+
+        return $this->show($user->id);
+    }
+
+       /**
+     * ともだち一覧の取得
+     *
+     * @param  \App\Models\User  $user  一覧を取得するユーザー
+     * @return \Illuminate\Http\Response
+     */
+    public function friends(User $user)
+    {
+        return response()->json($user->friends);
+    }
+
+    /**
+     * ともだち申請一覧の取得
+     *
+     * @param  \App\Models\User  $user  一覧を取得するユーザー
+     * @return \Illuminate\Http\Response
+     */
+    public function frienders(User $user)
+    {
+        return response()->json($user->friends);
+    }
+
+    /**
+     * ともだち/フォロー解除
+     *
+     * @param  \App\Models\User  $user  フォロー/フォロー解除するユーザー
+     * @return \Illuminate\Http\Response
+     */
+    public function friend(User $user)
+    {
+        if ($this->auth->id == $user->id) {
+            return response()->json(['message' => '自分は申請できません。'], config('consts.status.INTERNAL_SERVER_ERROR'));
+        }
+
+        // フォロー/フォロー解除処理
+        $result = $this->auth->friends()->toggle($user->id);
+
+        if (empty($result)) {
+            return response()->json(['message' => 'ともだち申請/ともだち解除に失敗しました。'], config('consts.status.INTERNAL_SERVER_ERROR'));
+        }
+
+        // フォロー時には通知を発行
+        if (count($result['attached'])) {
+            $user->notify(new UserFriended($this->auth));
             broadcast(new NotificationPosted($user));
         }
 
