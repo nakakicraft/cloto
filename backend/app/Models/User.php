@@ -49,7 +49,7 @@ class User extends Authenticatable implements MustVerifyEmail
      *
      * @var array
      */
-    protected $appends = ['status', 'given_stars_count', 'follows_count', 'followers_count', 'seat', 'room', 'roadmaps'];
+    protected $appends = ['status', 'given_stars_count', 'follows_count', 'followers_count','friends_count', 'seat', 'room', 'roadmaps'];
 
     /**
      * Send the email verification notification.
@@ -212,6 +212,26 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Frienders のリレーション
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function friends()
+    {
+        return $this->belongsToMany(self::class, 'frienders', 'friending_id', 'friended_id');
+    }
+
+    /**
+     * Frienders のリレーション
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function frienders()
+    {
+        return $this->belongsToMany(self::class, 'frienders', 'friended_id', 'friending_id');
+    }
+
+    /**
      * 状態データの追加
      *
      * @return \Illuminate\Support\Facades\Cache
@@ -257,6 +277,25 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getFollowersCountAttribute()
     {
         return $this->followers()->count();
+    }
+
+        /**
+     * ともだち数の追加
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getFriendsCountAttribute()
+    {
+        return $this->friends()->count();
+    }
+    /**
+     * フォロワー数の追加
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getFriendersCountAttribute()
+    {
+        return $this->frienders()->count();
     }
 
     /**
@@ -319,6 +358,37 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->followers()->where('following_id', $user_id)->exists();
     }
 
+        /**
+     * 友達申請しているか
+     *
+     * @param  Int  $user_id  フォロー先のユーザー
+     * @return Boolean
+     */
+    public function isFriending(Int $user_id)
+    {
+        return $this->friends()->where('friended_id', $user_id)->exists();
+    }
+
+    /**
+     * 友達申請されているか
+     *
+     * @param  Int  $user_id  フォロー元のユーザー
+     * @return Boolean
+     */
+    public function isFriended(Int $user_id)
+    {
+        return $this->frienders()->where('friending_id', $user_id)->exists();
+    }
+
+public function follow_each(){
+        //ユーザがフォロー中のユーザを取得
+        $userIds = $this->friending()->pluck('users.id')->toArray();
+       //相互フォロー中のユーザを取得
+        $follow_each = $this->frienders()->whereIn('users.id', $userIds)->pluck('users.id')->toArray();
+       //相互フォロー中のユーザを返す
+        return $follow_each;
+    }
+
     /**
      * 通知の取得
      *
@@ -346,6 +416,15 @@ class User extends Authenticatable implements MustVerifyEmail
                     ];
                     break;
 
+                case 'UserFriended':
+                    // 友達申請の通知
+                    $data += [
+                        'type' =>'UserFriended',
+                        'username' => $user -> username,
+                        'message' => $user -> handlename. 'さんから友達申請がきています'
+                    ];
+                    break;
+                    
                 case 'KarteCommentPosted':
                     // カルテへのコメント通知
                     $data += [
